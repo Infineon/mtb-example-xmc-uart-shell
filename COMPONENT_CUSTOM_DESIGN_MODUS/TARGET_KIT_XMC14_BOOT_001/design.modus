@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Design version="12" xmlns="http://cypress.com/xsd/cydesignfile_v3">
-    <ToolInfo version="2.2.1.3221"/>
+    <ToolInfo version="2.3.0.3685"/>
     <Devices>
         <Device mpn="XMC1404-Q064x0200">
             <BlockConfig>
@@ -140,38 +140,38 @@
                 </Block>
                 <Block location="scu[0].intcr[0]">
                     <Personality template="xmc1_intcr" version="1.0">
-                        <Param id="intsel0" value="XMC_SCU_IRQCTRL_SCU_SR0_IRQ0"/>
-                        <Param id="intsel1" value="XMC_SCU_IRQCTRL_SCU_SR1_IRQ1"/>
-                        <Param id="intsel2" value="XMC_SCU_IRQCTRL_SCU_SR2_IRQ2"/>
-                        <Param id="intsel3" value="XMC_SCU_IRQCTRL_ERU0_SR0_IRQ3"/>
-                        <Param id="intsel4" value="XMC_SCU_IRQCTRL_ERU0_SR1_IRQ4"/>
-                        <Param id="intsel5" value="XMC_SCU_IRQCTRL_ERU0_SR2_IRQ5"/>
-                        <Param id="intsel6" value="XMC_SCU_IRQCTRL_ERU0_SR3_IRQ6"/>
-                        <Param id="intsel7" value="XMC_SCU_IRQCTRL_MATH_SR0_IRQ7"/>
-                        <Param id="intsel8" value="XMC_SCU_IRQCTRL_LEDTS2_SR0_IRQ8"/>
+                        <Param id="intsel0" value="NC"/>
+                        <Param id="intsel1" value="NC"/>
+                        <Param id="intsel2" value="NC"/>
+                        <Param id="intsel3" value="NC"/>
+                        <Param id="intsel4" value="NC"/>
+                        <Param id="intsel5" value="NC"/>
+                        <Param id="intsel6" value="NC"/>
+                        <Param id="intsel7" value="NC"/>
+                        <Param id="intsel8" value="NC"/>
                         <Param id="intsel9" value="XMC_SCU_IRQCTRL_USIC0_SR0_IRQ9"/>
-                        <Param id="intsel10" value="XMC_SCU_IRQCTRL_USIC0_SR1_IRQ10"/>
-                        <Param id="intsel11" value="XMC_SCU_IRQCTRL_USIC0_SR2_IRQ11"/>
-                        <Param id="intsel12" value="XMC_SCU_IRQCTRL_USIC0_SR3_IRQ12"/>
-                        <Param id="intsel13" value="XMC_SCU_IRQCTRL_USIC0_SR4_IRQ13"/>
-                        <Param id="intsel14" value="XMC_SCU_IRQCTRL_USIC0_SR5_IRQ14"/>
-                        <Param id="intsel15" value="XMC_SCU_IRQCTRL_VADC0_C0SR0_IRQ15"/>
-                        <Param id="intsel16" value="XMC_SCU_IRQCTRL_VADC0_C0SR1_IRQ16"/>
-                        <Param id="intsel17" value="XMC_SCU_IRQCTRL_VADC0_G0SR0_IRQ17"/>
-                        <Param id="intsel18" value="XMC_SCU_IRQCTRL_VADC0_G0SR1_IRQ18"/>
-                        <Param id="intsel19" value="XMC_SCU_IRQCTRL_VADC0_G1SR0_IRQ19"/>
-                        <Param id="intsel20" value="XMC_SCU_IRQCTRL_VADC0_G1SR1_IRQ20"/>
-                        <Param id="intsel21" value="XMC_SCU_IRQCTRL_CCU40_SR0_IRQ21"/>
-                        <Param id="intsel22" value="XMC_SCU_IRQCTRL_CCU40_SR1_IRQ22"/>
-                        <Param id="intsel23" value="XMC_SCU_IRQCTRL_CCU40_SR2_IRQ23"/>
-                        <Param id="intsel24" value="XMC_SCU_IRQCTRL_CCU40_SR3_IRQ24"/>
-                        <Param id="intsel25" value="XMC_SCU_IRQCTRL_CCU80_SR0_IRQ25"/>
-                        <Param id="intsel26" value="XMC_SCU_IRQCTRL_CCU80_SR1_IRQ26"/>
-                        <Param id="intsel27" value="XMC_SCU_IRQCTRL_POSIF0_SR0_IRQ27"/>
-                        <Param id="intsel28" value="XMC_SCU_IRQCTRL_POSIF0_SR1_IRQ28"/>
-                        <Param id="intsel29" value="XMC_SCU_IRQCTRL_LEDTS0_SR0_IRQ29"/>
-                        <Param id="intsel30" value="XMC_SCU_IRQCTRL_LEDTS1_SR0_IRQ30"/>
-                        <Param id="intsel31" value="XMC_SCU_IRQCTRL_BCCU0_SR0_IRQ31"/>
+                        <Param id="intsel10" value="NC"/>
+                        <Param id="intsel11" value="NC"/>
+                        <Param id="intsel12" value="NC"/>
+                        <Param id="intsel13" value="NC"/>
+                        <Param id="intsel14" value="NC"/>
+                        <Param id="intsel15" value="NC"/>
+                        <Param id="intsel16" value="NC"/>
+                        <Param id="intsel17" value="NC"/>
+                        <Param id="intsel18" value="NC"/>
+                        <Param id="intsel19" value="NC"/>
+                        <Param id="intsel20" value="NC"/>
+                        <Param id="intsel21" value="NC"/>
+                        <Param id="intsel22" value="NC"/>
+                        <Param id="intsel23" value="NC"/>
+                        <Param id="intsel24" value="NC"/>
+                        <Param id="intsel25" value="NC"/>
+                        <Param id="intsel26" value="NC"/>
+                        <Param id="intsel27" value="NC"/>
+                        <Param id="intsel28" value="NC"/>
+                        <Param id="intsel29" value="NC"/>
+                        <Param id="intsel30" value="NC"/>
+                        <Param id="intsel31" value="NC"/>
                     </Personality>
                 </Block>
                 <Block location="usic[0].ch[1]">
