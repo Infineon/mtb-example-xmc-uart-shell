@@ -1,10 +1,10 @@
 # XMC MCU: UART Shell
 
-This code example demonstrates implementation of a shell on the UART communication interface including commands to toggle a LED using XMC&trade; MCU devices.
+This code example demonstrates the implementation of a command shell on the UART communication interface including commands to toggle an LED using XMC&trade; MCU devices.
 
 ## Requirements
 
-- [ModusToolbox® software](https://www.cypress.com/products/modustoolbox-software-environment) v2.3
+- [ModusToolbox&trade; software](https://www.cypress.com/products/modustoolbox-software-environment) v2.3
 - [SEGGER J-Link software](https://www.segger.com/downloads/jlink/#J-LinkSoftwareAndDocumentationPack)
 - Programming Language: C
 - Associated Parts: All [XMC™ MCU](https://www.infineon.com/cms/en/product/microcontroller/32-bit-industrial-microcontroller-based-on-arm-cortex-m/) parts
@@ -94,15 +94,13 @@ Various CLI tools include a `-h` option that prints help information to the term
 
 1. Connect the board to your PC using a micro-USB cable through the debug USB connector.
 
-2. Open a terminal program and select the JLINK CDC UART COM port. Configure the terminal with baud rate of 115200, data bits of 8, stop bits of 1, and with parity and flow control set to none.
+2. Open a terminal program and select the *JLINK CDC UART COM port*. Configure the terminal with baud rate of 115200, data bits of 8, stop bits of 1, and with parity and flow control set to none.
 
-3. Program the board.
+3. Program the board using Eclipse IDE for ModusToolbox:
 
-   - **Using Eclipse IDE for ModusToolbox:**
+   1. Select the application project in the Project Explorer.
 
-      1. Select the application project in the Project Explorer.
-
-      2. In the **Quick Panel**, scroll down, and click **\<Application Name> Program (JLink)**.
+   2. In the **Quick Panel**, scroll down, and click **\<Application Name> Program (JLink)**.
 
 4. After programming, the application starts automatically. Confirm that "Shell Application" is displayed on the UART terminal.
 
@@ -110,17 +108,29 @@ Various CLI tools include a `-h` option that prints help information to the term
 
    ![](images/terminal-shell-application.png)
 
-5. Type "help" and press the **Enter** key to check for available commands. 
+5. Type `help` and press **Enter** to check for available commands.
 
-6. Type "ledport low" and press the **Enter** key to switch the LED port from high level(default after reset) to low level.
+6. Type `ledport low` and press **Enter** to switch the LED port from HIGH level (default after reset) to LOW level.
 
-7. Type "ledport high" and press the **Enter** key to switch the LED port back to high level.
+7. Type `ledport high` and press **Enter** to switch the LED port back to HIGH level.
 
-8. Check LED state is toggling on step 6 and 7.
+8. Verify that the LED state toggles on steps 6 and 7.
 
 ## Debugging
 
 You can debug the example to step through the code. In the IDE, use the **\<Application Name> Debug (JLink)** configuration in the **Quick Panel**. For more details, see the "Program and Debug" section in the [Eclipse IDE for ModusToolbox User Guide](https://www.cypress.com/MTBEclipseIDEUserGuide).
+
+## Design and Implementation
+
+The implementation uses a UART resource, which is configured by the “uart 1.0” personality in **Device Configurator** where UART features such as baud rate, data bits, and frame length are set.
+
+A shell facilitates interaction with the user allowing the user to control the output of the LED pin. The `cmd_table[]` array provides the set of commands consisting of `help_cmd()` and `led_cmd()` functions.
+
+The `help_cmd()` function calls the default command shell help function.
+
+The `led_cmd()` function sets the GPIO output to HIGH or LOW depending on the input.
+
+In the main loop, the `shell_state_machine()` function is executed. 
 
 ## Related Resources
 
@@ -152,8 +162,9 @@ Document Title: *CE231961* - *XMC MCU: UART Shell*
 
 | Version | Description of Change |
 | ------- | --------------------- |
-| 0.5.0   | New code example      |
-| 1.0.0   | Updated to support ModusToolbox software v2.3 |
+| 0.5.0   | New code example.      |
+| 1.0.0   | Updated to support ModusToolbox software v2.3. |
+| 1.0.1 | Updated README |
 ------
 
 All other trademarks or registered trademarks referenced herein are the property of their respective owners.
