@@ -45,10 +45,10 @@
 #include "retarget_io.h"
 #include "shell.h"
 
-
 /*******************************************************************************
 * Forward declarations of function names
 *******************************************************************************/
+
 void help_cmd(int32_t argc, char **argv);
 void led_cmd(int32_t argc, char **argv);
 
