@@ -106,11 +106,19 @@ void led_cmd(int32_t argc, char **argv)
     {
         if ((strlen(argv[1]) == (strlen("low"))) && (strncmp(argv[1], "low", strlen(argv[1]) ) == 0))
         {
+#if (UC_SERIES == XMC11) || (UC_SERIES == XMC12) || (UC_SERIES == XMC13) 
+            XMC_GPIO_SetOutputHigh(CYBSP_USER_LED_PORT, CYBSP_USER_LED_PIN);
+#else
             XMC_GPIO_SetOutputLow(CYBSP_USER_LED_PORT, CYBSP_USER_LED_PIN);
+#endif
         }
         else if ((strlen(argv[1]) == (strlen("high"))) && (strncmp(argv[1], "high", strlen(argv[1]) ) == 0))
         {
+#if (UC_SERIES == XMC11) || (UC_SERIES == XMC12) || (UC_SERIES == XMC13) 
+            XMC_GPIO_SetOutputLow(CYBSP_USER_LED_PORT, CYBSP_USER_LED_PIN);
+#else
             XMC_GPIO_SetOutputHigh(CYBSP_USER_LED_PORT, CYBSP_USER_LED_PIN);
+#endif
         }
         else
         {
