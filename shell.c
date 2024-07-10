@@ -9,7 +9,7 @@
 *
 ******************************************************************************
 *
-* Copyright (c) 2015-2021, Infineon Technologies AG
+* Copyright (c) 2015-2024, Infineon Technologies AG
 * All rights reserved.
 *
 * Boost Software License - Version 1.0 - August 17th, 2003
@@ -53,7 +53,7 @@
 /* States of shell state machine */
 typedef enum SHELL_STATE
 {
-  SHELL_STATE_INIT,              /* The Shell service is initialized to process 
+  SHELL_STATE_INIT,              /* The Shell service is initialized to process
                                     next user command. */
   SHELL_STATE_GET_USER_INPUT,    /* The Shell service is accepting user commands. */
   SHELL_STATE_EXEC_CMD,          /* The Shell service is executing user commands. */
@@ -350,4 +350,3 @@ void shell_init(const shell_command_t *const cmd_table, void (*init)(void))
 
   init();
 }
-

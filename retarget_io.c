@@ -9,7 +9,7 @@
 *
 ******************************************************************************
 *
-* Copyright (c) 2015-2021, Infineon Technologies AG
+* Copyright (c) 2015-2024, Infineon Technologies AG
 * All rights reserved.
 *
 * Boost Software License - Version 1.0 - August 17th, 2003
@@ -71,9 +71,9 @@ void retarget_io_init(void)
 {
     serial_buffer.head = 0;
     serial_buffer.tail = 0;
-    
+
     /* Set NVIC priority */
-    NVIC_SetPriority(CYBSP_DEBUG_UART_RECEIVE_EVENT_IRQN, NVIC_EncodePriority(NVIC_GetPriorityGrouping(), DEBUG_UART_RECEIVE_EVENT_PRIORITY, 0)); 
+    NVIC_SetPriority(CYBSP_DEBUG_UART_RECEIVE_EVENT_IRQN, NVIC_EncodePriority(NVIC_GetPriorityGrouping(), DEBUG_UART_RECEIVE_EVENT_PRIORITY, 0));
 
     /* Enable IRQ */
     NVIC_EnableIRQ(CYBSP_DEBUG_UART_RECEIVE_EVENT_IRQN);

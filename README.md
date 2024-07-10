@@ -12,8 +12,6 @@ This code example demonstrates the implementation of a command shell on the UART
 ## Supported toolchains (make variable 'TOOLCHAIN')
 
 - GNU Arm® embedded compiler v10.3.1 (`GCC_ARM`) - Default value of `TOOLCHAIN`
-- Arm&reg; compiler v6.16 (`ARM`)
-- IAR C/C++ compiler v9.30.1 (`IAR`)
 
 ## Supported kits (make variable 'TARGET')
 
@@ -32,7 +30,7 @@ This code example demonstrates the implementation of a command shell on the UART
 
 This example uses the board's default configuration. See the kit user guide to ensure that the board is configured correctly.
 
-Additionally, an USB to UART serial adapter is required to test the code example on the [XMC4500 relax kit](https://www.infineon.com/cms/en/product/evaluation-boards/kit_xmc45_relax_v1/).  
+Additionally, an USB to UART serial adapter is required to test the code example on the [XMC4500 relax kit](https://www.infineon.com/cms/en/product/evaluation-boards/kit_xmc45_relax_v1/).
 
 ## Software setup
 
@@ -204,11 +202,12 @@ Document title: *CE231961* - *XMC&trade; MCU: UART Shell*
  1.1.0   | Added support for new kits
  2.0.0   | Updated to support ModusToolbox&trade; software v3.0; CE will not be backward compatible with previous versions of ModusToolbox™ software
  2.1.0   | Added support for new kits
+| 2.1.1   | Updated README        |
 ------
 
 All other trademarks or registered trademarks referenced herein are the property of their respective owners.
 
-© 2022 Infineon Technologies AG
+© 2022-2024 Infineon Technologies AG
 
 All Rights Reserved.
 
