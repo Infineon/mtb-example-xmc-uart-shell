@@ -159,4 +159,6 @@ int32_t ring_buffer_get(ring_buffer_t *const rb, uint8_t *const c)
     return RING_BUFFER_OK;
 }
 
+
+
 /* [] END OF FILE */

@@ -42,8 +42,13 @@
 #include "cybsp.h"
 #include "cy_utils.h"
 
-#include "retarget_io.h"
+#include "cy_retarget_io.h"
 #include "shell.h"
+#include "ring_buffer.h"
+
+#define SERIAL_BUFFER_SIZE 128
+/* Defines priority level of the DEBUG_UART receive event interrupt */
+#define DEBUG_UART_RECEIVE_EVENT_PRIORITY 63
 
 /*******************************************************************************
 * Forward declarations of function names
@@ -62,6 +67,31 @@ const shell_command_t cmd_table[] =
     {"ledport", 1u, 1u, led_cmd, "Led port output control", "<high|low>"},
     {0, 0u, 0u, 0, 0, 0}
 };
+
+/* Create a buffer with specified size to implement a ring buffer for data received/sent by UART */
+RING_BUFFER_DEF(serial_buffer, SERIAL_BUFFER_SIZE);
+
+/*******************************************************************************
+* Function Name: CYBSP_DEBUG_UART_RECEIVE_EVENT_HANDLER
+********************************************************************************
+* Summary:
+* Interrupt triggered for every received character on UART
+*
+* Parameters:
+*  void
+*
+* Return:
+*  void
+*
+*******************************************************************************/
+void CYBSP_DEBUG_UART_RECEIVE_EVENT_HANDLER(void)
+{
+    static uint8_t data;
+
+    /* Receive single characters from UART and push into ringbuffer */
+    data = XMC_UART_CH_GetReceivedData(CYBSP_DEBUG_UART_HW);
+    ring_buffer_put(&serial_buffer, data);
+}
 
 /*******************************************************************************
 * Function Name: help_cmd
@@ -180,7 +210,12 @@ int main(void)
     }
 
     /* Initialize printf retarget */
-    retarget_io_init();
+    cy_retarget_io_init(CYBSP_DEBUG_UART_HW);
+    serial_buffer.head = 0;
+    serial_buffer.tail = 0;
+
+    /* Enable IRQ */
+    NVIC_EnableIRQ(CYBSP_DEBUG_UART_RECEIVE_EVENT_IRQN);
 
     /* Initialize the shell processing */
     shell_init(cmd_table, my_shell_init);

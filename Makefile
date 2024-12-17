@@ -58,7 +58,7 @@ TOOLCHAIN=GCC_ARM
 # Debug -- build with minimal optimizations, focus on debugging.
 # Release -- build with full optimizations
 # Custom -- build with custom configuration, set the optimization flag in CFLAGS
-#
+
 # If CONFIG is manually edited, ensure to update or regenerate launch configurations
 # for your IDE.
 CONFIG=Debug

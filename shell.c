@@ -45,19 +45,20 @@
 #include <stdarg.h>
 
 #include "shell.h"
-#include "retarget_io.h"
+#include "cy_retarget_io.h"
 #include "ring_buffer.h"
+#include "cybsp.h"
 /*******************************************************************************
 * Typedefs
 *******************************************************************************/
 /* States of shell state machine */
 typedef enum SHELL_STATE
 {
-  SHELL_STATE_INIT,              /* The Shell service is initialized to process
+    SHELL_STATE_INIT,              /* The Shell service is initialized to process
                                     next user command. */
-  SHELL_STATE_GET_USER_INPUT,    /* The Shell service is accepting user commands. */
-  SHELL_STATE_EXEC_CMD,          /* The Shell service is executing user commands. */
-  SHELL_STATE_END_CMD            /* The Shell service finished command execution. */
+    SHELL_STATE_GET_USER_INPUT,    /* The Shell service is accepting user commands. */
+    SHELL_STATE_EXEC_CMD,          /* The Shell service is executing user commands. */
+    SHELL_STATE_END_CMD            /* The Shell service finished command execution. */
 } SHELL_STATE_t;
 
 /*******************************************************************************
@@ -99,16 +100,41 @@ static char shell_cmdline[SHELL_CMDLINE_SIZE];
 *******************************************************************************/
 int32_t shell_println(const char *format, ... )
 {
-  int32_t result;
-  va_list ap;
+    int32_t result;
+    va_list ap;
 
-  va_start(ap, format);
-  result = vprintf(format, ap);
-  /* Add new line.*/
-  result += printf("\r\n");
-  va_end (ap);
+    va_start(ap, format);
+    result = vprintf(format, ap);
+    /* Add new line.*/
+    result += printf("\r\n");
+    va_end (ap);
 
-  return result;
+    return result;
+}
+
+/*******************************************************************************
+* Function Name: print_shell_prompt
+********************************************************************************
+* Summary:
+* Prints SHELL> on terminal.
+*
+* Parameters:
+*  None
+*
+* Return:
+*  None
+*
+*******************************************************************************/
+void print_shell_prompt(void)
+{
+    char prompt[] = SHELL_PROMPT;
+    uint8_t i;
+
+    for (i=0;i<sizeof(prompt);i++)
+    {
+        XMC_UART_CH_Transmit(cy_retarget_io_uart_obj.channel,prompt[i]);
+    }
+
 }
 
 /*******************************************************************************
@@ -128,42 +154,40 @@ int32_t shell_println(const char *format, ... )
 *******************************************************************************/
 static int32_t shell_make_argv(char *cmdline, char *argv[])
 {
-  int32_t argc = 0;
-  int32_t i;
-  bool in_text_flag = false;
+    int32_t argc = 0;
+    int32_t i;
+    bool in_text_flag = false;
 
-  if ((cmdline != NULL) && (argv != NULL))
-  {
-    for (i = 0u; cmdline[i] != '\0'; ++i)
+    if ((cmdline != NULL) && (argv != NULL))
     {
-      if (cmdline[i] == ' ')
-      {
-        in_text_flag = false;
-        cmdline[i] = '\0';
-      }
-      else
-      {
-        if (argc < SHELL_ARGS_MAX)
+        for (i = 0u; cmdline[i] != '\0'; ++i)
         {
-          if (in_text_flag == false)
-          {
-            in_text_flag = true;
-            argv[argc] = &cmdline[i];
-            argc++;
-          }
+            if (cmdline[i] == ' ')
+            {
+                in_text_flag = false;
+                cmdline[i] = '\0';
+            }
+            else
+            {
+                if (argc < SHELL_ARGS_MAX)
+                {
+                    if (in_text_flag == false)
+                    {
+                        in_text_flag = true;
+                        argv[argc] = &cmdline[i];
+                        argc++;
+                    }
+                }
+                else
+                {
+                    /* Return argc.*/
+                    break;
+                }
+            }
         }
-        else
-        {
-          /* Return argc.*/
-          break;
-        }
-      }
+        argv[argc] = 0;
     }
-
-    argv[argc] = 0;
-  }
-
-  return argc;
+    return argc;
 }
 
 /*******************************************************************************
@@ -185,116 +209,120 @@ void shell_state_machine(void)
   /* One extra for 0 terminator.*/
   char *argv[SHELL_ARGS_MAX + 1u];
   int32_t argc;
-  int32_t ch;
-
-  switch (shell_state)
-  {
-    case SHELL_STATE_INIT:
-      printf("%s", SHELL_PROMPT);
-      shell_state = SHELL_STATE_GET_USER_INPUT;
-      break;
-
-    case SHELL_STATE_GET_USER_INPUT:
-      if (ring_buffer_avail(&serial_buffer) > 0)
-      {
-        ch = getchar();
-        if (ch != EOF)
+  uint8_t buf;
+    switch (shell_state)
+    {
+        case SHELL_STATE_INIT:
         {
-          /* Check if
-           * 1. enter was pressed or
-           * 2. shell_cmdline buffer has only 1 character left, reserved for zero termination
-           */
-          if (((char)ch != SHELL_LF) && (shell_cmdline_pos < (SHELL_CMDLINE_SIZE - 1)))
-          {
-            switch(ch)
-            {
-              case SHELL_BACKSPACE:
-              case SHELL_DELETE:
-              if (shell_cmdline_pos > 0U)
-              {
-                shell_cmdline_pos -= 1U;
-                putchar(SHELL_BACKSPACE);
-                putchar(' ');
-                putchar(SHELL_BACKSPACE);
-              }
-              break;
-
-              default:
-                if ((shell_cmdline_pos + 1U) < SHELL_CMDLINE_SIZE)
-                {
-                  /* Only printable characters. */
-                  if (((char)ch >= SHELL_SPACE) && ((char)ch <= SHELL_DELETE))
-                  {
-                    shell_cmdline[shell_cmdline_pos] = (char)ch;
-                    shell_cmdline_pos++;
-                    putchar((char)ch);
-                  }
-                }
-                break;
-            }
-          }
-          else
-          {
-            /* Append zero termination to command and start execution */
-            shell_cmdline[shell_cmdline_pos] = '\0';
-
-            putchar(SHELL_CR);
-            putchar(SHELL_LF);
-
-            shell_state = SHELL_STATE_EXEC_CMD;
-          }
-        }
-      }
-      break;
-
-    case SHELL_STATE_EXEC_CMD:
-      argc = shell_make_argv(shell_cmdline, argv);
-
-      if (argc != 0)
-      {
-        const shell_command_t *cur_command = shell_cmd_table;
-        while (cur_command->name)
-        {
-          /* Command is found. */
-          if (strcasecmp(cur_command->name, argv[0]) == 0)
-          {
-            if (((argc - 1) >= cur_command->min_args) && ((argc - 1) <= cur_command->max_args))
-            {
-               if (cur_command->cmd_ptr)
-               {
-                 ((void(*)(int32_t cmd_ptr_argc, char **cmd_ptr_argv))(cur_command->cmd_ptr))(argc, argv);
-               }
-            }
-            else
-            {
-              /* Wrong command syntax. */
-              shell_println(SHELL_ERR_SYNTAX, argv[0]);
-            }
-
+            print_shell_prompt();
+            shell_state = SHELL_STATE_GET_USER_INPUT;
             break;
-          }
-          cur_command++;
         }
-
-        if (cur_command->name == 0)
+        case SHELL_STATE_GET_USER_INPUT:
         {
-          shell_println(SHELL_ERR_CMD, argv[0]);
+            if (ring_buffer_avail(&serial_buffer) > 0)
+            {
+                ring_buffer_get(&serial_buffer, &buf);
+                if (buf != 0x0D)
+                {
+                /* Check if
+                 * 1. enter was pressed or
+                 * 2. shell_cmdline buffer has only 1 character left, reserved for zero termination
+                 */
+                    if (((char)buf != SHELL_LF) && (shell_cmdline_pos < (SHELL_CMDLINE_SIZE - 1)))
+                    {
+                        switch(buf)
+                        {
+                            case SHELL_BACKSPACE:
+                            case SHELL_DELETE:
+                            {
+                                if (shell_cmdline_pos > 0U)
+                                {
+                                  shell_cmdline_pos -= 1U;
+                                  XMC_UART_CH_Transmit(cy_retarget_io_uart_obj.channel,SHELL_BACKSPACE);
+                                  XMC_UART_CH_Transmit(cy_retarget_io_uart_obj.channel,' ');
+                                  XMC_UART_CH_Transmit(cy_retarget_io_uart_obj.channel,SHELL_BACKSPACE);
+                                }
+                                break;
+                            }
+                            default:
+                            {
+                                if ((shell_cmdline_pos + 1U) < SHELL_CMDLINE_SIZE)
+                                {
+                                  /* Only printable characters. */
+                                    if (((char)buf >= SHELL_SPACE) && ((char)buf <= SHELL_DELETE))
+                                    {
+                                        shell_cmdline[shell_cmdline_pos] = (char)buf;
+                                        shell_cmdline_pos++;
+                                        XMC_UART_CH_Transmit(cy_retarget_io_uart_obj.channel,(char)buf);
+                                    }
+                                }
+                                break;
+                            }
+                        }
+                    }
+                }
+                  else
+                  {
+                  /* Append zero termination to command and start execution */
+                      shell_cmdline[shell_cmdline_pos] = '\0';
+                      XMC_UART_CH_Transmit(cy_retarget_io_uart_obj.channel,SHELL_CR);
+                      XMC_UART_CH_Transmit(cy_retarget_io_uart_obj.channel,SHELL_LF);
+                      shell_state = SHELL_STATE_EXEC_CMD;
+                  }
+
+            }
+            break;
         }
-      }
+        case SHELL_STATE_EXEC_CMD:
+        {
+            argc = shell_make_argv(shell_cmdline, argv);
 
-      shell_state = SHELL_STATE_END_CMD;
-      break;
+            if (argc != 0)
+            {
+                const shell_command_t *cur_command = shell_cmd_table;
+                while (cur_command->name)
+                {
+                    /* Command is found. */
+                    if (strcasecmp(cur_command->name, argv[0]) == 0)
+                    {
+                        if (((argc - 1) >= cur_command->min_args) && ((argc - 1) <= cur_command->max_args))
+                        {
+                            if (cur_command->cmd_ptr)
+                            {
+                                ((void(*)(int32_t cmd_ptr_argc, char **cmd_ptr_argv))(cur_command->cmd_ptr))(argc, argv);
+                            }
+                        }
+                        else
+                        {
+                            /* Wrong command syntax. */
+                            shell_println(SHELL_ERR_SYNTAX, argv[0]);
+                        }
+                        break;
+                    }
+                    cur_command++;
+                }
+                if (cur_command->name == 0)
+                {
+                    shell_println(SHELL_ERR_CMD, argv[0]);
+                }
+            }
+            shell_state = SHELL_STATE_END_CMD;
+            break;
+        }
 
-    case SHELL_STATE_END_CMD:
-      shell_state = SHELL_STATE_INIT;
-      shell_cmdline_pos = 0u;
-      shell_cmdline[0] = 0u;
-      break;
+        case SHELL_STATE_END_CMD:
+        {
+            shell_state = SHELL_STATE_INIT;
+            shell_cmdline_pos = 0u;
+            shell_cmdline[0] = 0u;
+            break;
+        }
 
-    default:
-        break;
+        default:
+            break;
 
-  }
+    }
 }
 
 /*******************************************************************************
@@ -313,15 +341,15 @@ void shell_state_machine(void)
 *******************************************************************************/
 void shell_help(void)
 {
-  const shell_command_t *cur_command = shell_cmd_table;
+    const shell_command_t *cur_command = shell_cmd_table;
 
-  while (cur_command->name)
-  {
-    shell_println(">%-7s %-16s- %s", cur_command->name,
-                                      cur_command->syntax,
-                                      cur_command->description);
-    cur_command++;
-  }
+    while (cur_command->name)
+    {
+        shell_println(">%-7s %-16s- %s", cur_command->name,
+                                        cur_command->syntax,
+                                        cur_command->description);
+        cur_command++;
+    }
 }
 
 /*******************************************************************************
@@ -341,12 +369,11 @@ void shell_help(void)
 *******************************************************************************/
 void shell_init(const shell_command_t *const cmd_table, void (*init)(void))
 {
-  setvbuf(stdout, NULL, _IONBF, 0);
 
-  shell_state = SHELL_STATE_INIT;
-  shell_cmdline_pos = 0u;
-  shell_cmdline[0] = 0u;
-  shell_cmd_table = cmd_table;
+    shell_state = SHELL_STATE_INIT;
+    shell_cmdline_pos = 0u;
+    shell_cmdline[0] = 0u;
+    shell_cmd_table = cmd_table;
 
-  init();
+    init();
 }

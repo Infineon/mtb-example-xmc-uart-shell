@@ -41,6 +41,8 @@
 #ifndef SHELL_H
 #define SHELL_H
 
+#include "ring_buffer.h"
+
 /*******************************************************************************
 * Macros
 *******************************************************************************/
@@ -75,7 +77,7 @@ typedef struct shell_command
                                    * - @c | = The vertical bar means a choice between
                                    * parameter value is acceptable.*/
 } shell_command_t;
-
+extern ring_buffer_t serial_buffer;
 #ifdef __cplusplus
 extern "C" {
 #endif
